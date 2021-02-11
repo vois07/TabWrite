@@ -5,8 +5,7 @@
     <ProjectGuid>45dcc9dc-b321-4bab-bb5f-2f538343f86d</ProjectGuid>
     <ProjectHome>.</ProjectHome>
     <StartupFile>TabWrite.py</StartupFile>
-    <SearchPath>
-    </SearchPath>
+    <SearchPath>..\TabWrite</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>TabWrite</Name>
