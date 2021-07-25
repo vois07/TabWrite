@@ -10,6 +10,9 @@
     <OutputPath>.</OutputPath>
     <Name>TabWrite</Name>
     <RootNamespace>TabWrite</RootNamespace>
+    <TestFramework>pytest</TestFramework>
+    <UnitTestPattern>test*.py</UnitTestPattern>
+    <UnitTestRootDirectory>.</UnitTestRootDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,7 +23,22 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="TabController.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TabModel.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TabView.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="TabWrite.py" />
+    <Compile Include="Tests\test_tab.py">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Tests\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
