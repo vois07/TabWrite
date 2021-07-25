@@ -30,12 +30,10 @@ class Tab:
     #    return curr_bar
     
     def __str__(self):
-        return '\n'.join(self.bars)
+        return '\n\n'.join([str(b) for b in self.bars])
 
 
-class Bar:
-    #linia z taktami aż do enter
-    
+class Bar:    
     def __init__(self):
         self.barstrings = dict()
         self.strings = range(1,7)
@@ -44,11 +42,10 @@ class Bar:
         
     def add_sound(self, strng, sound): 
         self.barstrings[Strng(strng)].add_sound(sound)
-        self.normalize(sound.position)
+        self.normalize(sound.position + 1)
     
     def __str__(self):
-        for bstring in self.barstrings:
-            print(bstring)
+        return '\n'.join([str(b) for _, b in self.barstrings.items()])
     
     #def remove_last_sound(self, strng):s
     #    self.barstrings[strng] = self.barstrings[strng].remove_last_sound()
@@ -58,9 +55,8 @@ class Bar:
             self.barstrings[Strng(i)].add_spaces(position - len(self.barstrings[Strng(i)]))
     
     def add_break(self):
-        for i in strings:
-            self.barstrings[i].add_break()
-        self.max_len += 1
+        for name, bstring in self.barstrings.items():
+            bstring.add_break()
 
 
 class BarString:
@@ -69,10 +65,13 @@ class BarString:
         self.sounds = []
 
     def __str__(self):
-        return str(self.name) + "|--" + ''.join(self.sounds)
+        sounds = ''
+        if len(self.sounds) > 0:
+            sounds = ''.join([str(s) for s in self.sounds])
+        return str(self.name.name) + "|--" + sounds
     
     def __len__(self):
-        return sum([len(s) for s in self.sounds])
+        return len(self.sounds)
     
     #dodać funkcję że podaje się pozycję i szuka się po soundach i usuwa
     #def remove_last_sound(self):
@@ -86,11 +85,11 @@ class BarString:
         self.sounds.append(sound)
     
     def add_break(self):
-        self.sounds.append("|") # taki rodzaj dźwieku, może -2??
+        self.sounds.append("|") 
     
     def add_spaces(self, n=1):
         for i in range(n):
-            self.sounds.append("-") # taki rodzaj dźwieku, może -1??
+            self.sounds.append("-")
     
     def sort_by_postions(self): 
         self.sounds = sorted(self.sounds, key=lambda x: x.position) 
@@ -110,9 +109,6 @@ class BarString:
         for s1, s2 in zip(self.sounds, other.sounds):
             ans &= (s1 != s2)
         return ans
-
-
-
 
 
 class Sound:

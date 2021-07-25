@@ -11,29 +11,31 @@ class View:
         # for windows 
         if name == 'nt': 
             _ = system('cls') 
-  
         # for mac and linux(here, os.name is 'posix') 
         else: 
             _ = system('clear') 
 
 
-    def print(self, tab, bar, curr_input, curr_str, curr_pos):
+    def print(self, tab, bar, curr_str, curr_pos):
         print(tab)
+        print()
         for name, barstring in bar.barstrings.items():
-            position = 0
-            print (name.name + '|--', end='')
-            for i in range(len(barstring)+1):
-                if barstring.name.value == curr_str:
-                    if position == curr_pos:
-                        print (curr_input + ':', end='')
-                        position += 1
-                try:
-                    print (barstring.sounds[i], end='')
-                    position += len(barstring.sounds[i])
-                except IndexError:
-                    pass
-            print()
-
+            if barstring.name.value == curr_str:
+                print (name.name + '|--', end='')
+                for i in range(len(barstring)+1):
+                    try:
+                        print (barstring.sounds[i], end='')
+                    except IndexError:
+                        pass
+                    if i == curr_pos:
+                        print (':', end='')
+                print()
+            else:
+                print(barstring)
+        print()
+        print()
+            
+           
 
                  
 
