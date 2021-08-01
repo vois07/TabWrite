@@ -4,20 +4,22 @@ import itertools
 from os import system, name 
 from pynput.keyboard import Listener, Key
 from TabController import Controller
-#from TabView import View
-#from TabModel import Bar, BarString, Sound, Tab, Strng
 
-#remove podobnie jak add z posiotion
-
-#def on_press(key):
-#    try:
-#        print('alphanumeric key {0} pressed'.format(
-#            key.char)) # cyferki i literki~i znaki
-#    except AttributeError:
-#        print('special key {0} pressed'.format(
-#            key))
+import ctypes
+from time import sleep
+from ctypes import windll
 
 def main():
+    #ACTIVE window by pid
+    #last_id = 0
+    #for i in range(50):
+    #    sleep(20)
+    #    hwnd = windll.user32.GetForegroundWindow()
+    #    pid = ctypes.c_ulong()
+    #    windll.user32.GetWindowThreadProcessId(hwnd,ctypes.byref(pid))
+    #    if last_id != pid.value:
+    #        print(pid.value)
+    #        last_id = pid.value
     control = Controller()
     #listener = Listener(on_press=on_press)
     #listener.start()

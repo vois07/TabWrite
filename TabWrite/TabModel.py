@@ -21,13 +21,13 @@ class Tab:
     def add_bar(self, bar):
         self.bars.append(bar)
     
-    #def remove_last_bar(self):
-    #    try:
-    #        curr_bar = self.tab[-1]
-    #        self.bar = self.tab[:-1]
-    #    except IndexError:
-    #        curr_bar = Bar()
-    #    return curr_bar
+    def remove_last_bar(self):
+        try:
+            curr_bar = self.bars[-1]
+            self.bars = self.bars[:-1]
+        except IndexError:
+            curr_bar = Bar()
+        return curr_bar
     
     def __str__(self):
         return '\n\n'.join([str(b) for b in self.bars])
@@ -39,30 +39,42 @@ class Bar:
         self.strings = range(1,7)
         for i in self.strings:
             self.barstrings[Strng(i)] = BarString(Strng(i))
-        
-    def add_sound(self, strng, sound): 
-        self.barstrings[Strng(strng)].add_sound(sound)
-        self.normalize(sound.position + 1)
-    
+
     def __str__(self):
         return '\n'.join([str(b) for _, b in self.barstrings.items()])
-    
-    #def remove_last_sound(self, strng):s
-    #    self.barstrings[strng] = self.barstrings[strng].remove_last_sound()
+
+    def __add__(self, other):
+        for i in self.strings:
+            self.barstrings[Strng(i)] = self.barstrings[Strng(i)] + other.barstrings[Strng(i)]
+        return self
+        
+    def add_sound(self, strng, sound, position, n=1): 
+        self.barstrings[Strng(strng)].add_sound(sound, position, n)
+
+    def add_break(self, position):
+        for i in self.strings:
+            self.barstrings[Strng(i)].add_sound('|', position)
+
+    def remove_sound(self, strng, position):
+        if self.barstrings[Strng(strng)].is_break(position-1):
+            for i in self.strings:
+                self.barstrings[Strng(i)] = self.barstrings[Strng(i)].remove_sound(position-1)
+        else:
+            self.barstrings[Strng(strng)] = self.barstrings[Strng(strng)].sound_at(position-1, '-')
+
+    def str_len(self, strng):
+        return len(self.barstrings[Strng(strng)])
     
     def normalize(self, position):
         for i in self.strings:
-            self.barstrings[Strng(i)].add_spaces(position - len(self.barstrings[Strng(i)]))
-    
-    def add_break(self):
-        for name, bstring in self.barstrings.items():
-            bstring.add_break()
+            self.barstrings[Strng(i)].add_sound('-', position, position - len(self.barstrings[Strng(i)]))
+
 
 
 class BarString:
-    def __init__(self, name):
+    def __init__(self, name, sounds=[]):
         self.name = name
-        self.sounds = []
+        self.sounds = sounds
 
     def __str__(self):
         sounds = ''
@@ -72,28 +84,31 @@ class BarString:
     
     def __len__(self):
         return len(self.sounds)
+
+    def __add__(self, other):
+        sounds = self.sounds + other.sounds
+        return BarString(self.name, sounds)
     
-    #dodać funkcję że podaje się pozycję i szuka się po soundach i usuwa
-    #def remove_last_sound(self):
-    #    try:
-    #        self.sounds = self.sounds[:-1]
-    #    except IndexError:
-    #        pass
-    #    return self
+    def remove_sound(self, position):
+        if position == len(self.sounds)-1:
+            self.sounds = self.sounds[:-1]
+        else: 
+            try:
+                self.sounds = self.sounds[:position] + self.sounds[position+1:]
+            except IndexError:
+                pass
+        return self
     
-    def add_sound(self, sound):
-        self.sounds.append(sound)
+    def add_sound(self, sound, position, n=1):
+        self.sounds = self.sounds[:position] + [sound]*n + self.sounds[position:]
+
+    def sound_at(self, position, value):
+        self.sounds[position] = value
+        return self
     
-    def add_break(self):
-        self.sounds.append("|") 
-    
-    def add_spaces(self, n=1):
-        for i in range(n):
-            self.sounds.append("-")
-    
-    def sort_by_postions(self): 
-        self.sounds = sorted(self.sounds, key=lambda x: x.position) 
-    
+    def is_break(self, position):
+        return self.sounds[position] == '|' or self.sounds[position] == '-'
+
     def __eq__(self, other):
         ans = self.name == other.name
         if len(self.sounds) != len(other.sounds):
@@ -109,25 +124,6 @@ class BarString:
         for s1, s2 in zip(self.sounds, other.sounds):
             ans &= (s1 != s2)
         return ans
-
-
-class Sound:
-    def __init__(self, position, fret):
-        self.position = position
-        self.fret = str(fret)
-            
-    def __str__(self):
-        return str(self.fret)
-    
-    def __len__(self):
-        return len(str(self.fret))
-
-    def __eq__(self, other):
-        return self.position == other.position and self.fret == other.fret
-        
-    def __ne__(self, other):
-        return self.position != other.position and self.fret != other.fret
-        
 
 
 
