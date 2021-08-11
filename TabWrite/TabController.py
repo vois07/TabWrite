@@ -4,7 +4,7 @@
 import enum
 import operator
 import itertools
-from os import system, name 
+from os import system, name, path
 from pynput.keyboard import Listener, Key
 from TabView import View
 from TabModel import Bar, Tab, Strng
@@ -17,9 +17,10 @@ class Controller:
         self.cursor_string = 1
         self.cursor_position = 0
         self.max_len = 0
+        self.current_keys = set()
         self.view = View()
         self.view.print(self.tab, self.bar, self.cursor_string, self.cursor_position)
-        listener = Listener(on_press=self.input_handler)
+        listener = Listener(on_press=self.on_press)
         listener.start()
         listener.join()
 
@@ -49,6 +50,12 @@ class Controller:
         self.bar = Bar()
         self.cursor_position = 0
         self.max_len = 0
+
+    def on_press(self, key):
+        try:
+            self.input_handler(key)
+        except AttributeError:
+            pass
     
     def input_handler(self, input):
         if (input == Key.space):
@@ -66,21 +73,21 @@ class Controller:
                 self.cursor_position += 1 
         elif (input == Key.backspace):
             self.remove_sound(self.cursor_position)
-            self.cursor_position -= 1
+            self.max_len -= 1
+            self.cursor_position = self.cursor_position-1 if self.cursor_position > 0 else 0
         elif (input == Key.esc):
             self.save_to_file()
         else:
-            try:
-                self.add_sound(str(input.char))
-            except AttributeError:
-                pass
-        #self.view.clear()
+            self.add_sound(str(input.char))
+        self.view.clear()
         self.view.print(self.tab, self.bar, self.cursor_string, self.cursor_position)
 
 
-    def save_to_file(self):
-        with open('tab.txt', 'w') as f:
+    def save_to_file(self, file_name='tab.txt'):
+        with open(file_name, 'w') as f:
             f.write(str(self.tab) + '\n\n' + str(self.bar))
+            print('\nFile saved to ' + path.realpath(f.name) + '\n')
+
 
     
 
