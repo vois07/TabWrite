@@ -53,7 +53,8 @@ class Controller:
 
     def on_press(self, key):
         try:
-            self.input_handler(key)
+            if not self.view.console or self.view.console.is_active():
+                self.input_handler(key)
         except AttributeError:
             pass
     
@@ -73,8 +74,11 @@ class Controller:
                 self.cursor_position += 1 
         elif (input == Key.backspace):
             self.remove_sound(self.cursor_position)
-            self.max_len -= 1
-            self.cursor_position = self.cursor_position-1 if self.cursor_position > 0 else 0
+            if self.cursor_position > 0:
+                self.max_len -= 1
+                self.cursor_position = self.cursor_position-1  
+            else: 
+                self.cursor_position = 0
         elif (input == Key.esc):
             self.save_to_file()
         else:

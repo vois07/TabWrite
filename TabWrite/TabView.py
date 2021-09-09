@@ -5,16 +5,33 @@ from os import system, name
 from pynput.keyboard import Listener, Key
 from utils import singleton
 from ctypes import *
+import platform
 
 STD_OUTPUT_HANDLE = -11
+
+class CONSOLE_CURSOR_INFO(Structure):
+    _fields_ = [('dwSize', c_int),
+                ('bVisible', c_int)]
  
-class COORD(Structure):
-    pass
- 
-COORD._fields_ = [("X", c_short), ("Y", c_short)]
+class WindowsConsole:
+    def __init__(self):
+        self.consoleWindow = windll.kernel32.GetConsoleWindow()
+        self.stdOut = windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
+        self.cursorInfo = CONSOLE_CURSOR_INFO()
+
+    def hide_cursor(self):
+        self.cursorInfo.dwSize = 1
+        self.cursorInfo.bVisible = 0
+        windll.kernel32.SetConsoleCursorInfo(self.stdOut, byref(self.cursorInfo))
+
+    def is_active(self):
+        return windll.user32.GetForegroundWindow() == self.consoleWindow
 
 @singleton
 class View:
+    def __init__(self):
+        self.console = None
+
     def clear(self): 
         # for windows 
         if name == 'nt': 
@@ -23,8 +40,10 @@ class View:
         else: 
             _ = system('clear') 
 
-
     def print(self, tab, bar, curr_str, curr_pos):
+        if platform.system() == 'Windows':
+            self.console = WindowsConsole()
+            self.console.hide_cursor()
         print(tab)
         print()
         for name, barstring in bar.barstrings.items():
@@ -40,16 +59,9 @@ class View:
                 print()
             else:
                 print(barstring)
-        #self.print_at(0, 0, "") cursor
         print()
         print()
 
-    def print_at(self, r, c, s):
-        h = windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
-        windll.kernel32.SetConsoleCursorPosition(h, COORD(c, r))
- 
-        c = s.encode("windows-1252")
-        windll.kernel32.WriteConsoleA(h, c_char_p(c), len(c), None, None)
             
            
 
