@@ -59,11 +59,16 @@ class Bar:
         if self.barstrings[Strng(strng)].is_break(position-1):
             for i in self.strings:
                 self.barstrings[Strng(i)] = self.barstrings[Strng(i)].remove_sound(position-1)
-        else:
-            self.barstrings[Strng(strng)] = self.barstrings[Strng(strng)].sound_at(position-1, '-')
+            return False
+        self.barstrings[Strng(strng)] = self.barstrings[Strng(strng)].sound_at(position-1, '-')
+        return True
+
 
     def str_len(self, strng):
         return len(self.barstrings[Strng(strng)])
+
+    def __len__(self):
+        return max([len(self.barstrings[Strng(i)]) for i in self.strings])
     
     def normalize(self, position):
         for i in self.strings:

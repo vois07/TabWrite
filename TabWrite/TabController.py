@@ -41,8 +41,10 @@ class Controller:
     def remove_sound(self, position):
         if position <= 0:
             self.bar = self.bar + self.tab.remove_last_bar()
-        else:
-            self.bar.remove_sound(self.cursor_string, position)
+            self.cursor_position = len(self.bar) + 1
+            self.max_len = self.cursor_position
+            return False
+        return self.bar.remove_sound(self.cursor_string, position)
     
     def commit_bar(self):
         self.bar.add_break(self.cursor_position)
@@ -73,10 +75,11 @@ class Controller:
             if self.cursor_position < self.max_len:
                 self.cursor_position += 1 
         elif (input == Key.backspace):
-            self.remove_sound(self.cursor_position)
+            replaced_sound = self.remove_sound(self.cursor_position)
             if self.cursor_position > 0:
-                self.max_len -= 1
-                self.cursor_position = self.cursor_position-1  
+                if not replaced_sound:
+                    self.max_len -= 1
+                    self.cursor_position = self.cursor_position-1  
             else: 
                 self.cursor_position = 0
         elif (input == Key.esc):
